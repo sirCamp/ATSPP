@@ -1,0 +1,70 @@
+Bootstrap: docker
+From: nvidia/cuda:11.3.0-cudnn8-devel-ubuntu20.04
+Stage: build
+
+%setup
+    mkdir ${SINGULARITY_ROOTFS}/opt/workspace
+
+%files
+    ./script.py /opt/workspace
+    ./interventi_nlp_train_no_stem.csv  /opt/workspace
+    ./interventi_nlp_test_no_stem.csv  /opt/workspace
+    ./interventi_nlp_val_no_stem.csv  /opt/workspace
+
+%environment
+    export LC_ALL=C
+    export TZ=Europe/Rome
+
+%post
+    #SETTING TIMEZONE FOR TDZ PACKAGE
+    TZ=Europe/Rome
+    echo "export TZ=\"${TZ}\"" >> $SINGULARITY_ENVIRONMENT
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+    #UPDATE REPOSITORY AND INSTALL PACKAGES
+    apt-get update -o Acquire::CompressionTypes::Order::=gz -o Acquire::ForceIPv4=true --fix-missing
+    apt-get install netcat python3 python3-dev python3-wheel python3-testresources python3-pip python-is-python3 apt-transport-https curl git -y
+
+    #INSTALL PYTHON PACKAGES
+    pip3 install  pandas \
+       numpy \
+       "dask[complete]" \
+       "dask[array]"    \
+       "dask[dataframe]"  \
+       "dask[diagnostics]"  \
+       "dask[distributed]"  \
+       dask-ml \
+       scikit-learn \
+       numba \
+       joblib \
+       pyarrow \
+       tensorflow==2.5.0 \
+       keras
+
+    #LAST PASSAGES
+    apt-get update && apt-get install -y procps && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+%runscript
+
+
+%startscript
+
+%test
+    grep -q NAME=\"Ubuntu\" /etc/os-release
+    if [ $? -eq 0 ]; then
+        echo "Container base is Ubuntu as expected."
+    else
+        echo "Container base is not Ubuntu."
+        exit 1
+    fi
+
+    echo "Python installed version: $(python3 --version)"
+    echo "Tensorflow installed version: $(python -c 'import tensorflow as tf; print(tf.__version__)')"
+    echo "Container timezone $TZ"
+
+%labels
+    Author sirCamp
+    Version v0.0.1
+
+%help
+    This is a container to perform parallel computation for the ATSPP PHD exam
