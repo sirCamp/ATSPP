@@ -7,9 +7,9 @@ Stage: build
 
 %files
     ./script.py /opt/workspace
-    ./interventi_nlp_train_no_stem.csv  /opt/workspace
-    ./interventi_nlp_test_no_stem.csv  /opt/workspace
-    ./interventi_nlp_val_no_stem.csv  /opt/workspace
+    ./1ab8ab53-152d-480b-8d36-fcdb4c832ffc_train_no_stem.csv  /opt/workspace
+    ./1ab8ab53-152d-480b-8d36-fcdb4c832ffc_test_no_stem.csv  /opt/workspace
+    ./1ab8ab53-152d-480b-8d36-fcdb4c832ffc_val_no_stem.csv  /opt/workspace
 
 %environment
     export LC_ALL=C
