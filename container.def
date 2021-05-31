@@ -39,6 +39,7 @@ Stage: build
        joblib \
        pyarrow \
        tensorflow==2.5.0 \
+       tensorflow_addons \
        keras
 
     #LAST PASSAGES
