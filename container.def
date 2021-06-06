@@ -14,41 +14,39 @@ Stage: build
 %environment
     export LC_ALL=C
     export TZ=Europe/Rome
+    export DEBIAN_FRONTEND=noninteractive
 
 %post
     #SETTING TIMEZONE FOR TDZ PACKAGE
     TZ=Europe/Rome
     echo "export TZ=\"${TZ}\"" >> $SINGULARITY_ENVIRONMENT
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    export DEBIAN_FRONTEND=noninteractive
 
     #UPDATE REPOSITORY AND INSTALL PACKAGES
     apt-get update -o Acquire::CompressionTypes::Order::=gz -o Acquire::ForceIPv4=true --fix-missing
-    apt-get install netcat python3 python3-dev python3-wheel python3-testresources python3-pip python-is-python3 apt-transport-https curl git -y
+    apt-get install netcat nano python3 python3-dev python3-wheel python3-testresources python3-pip \
+        python-is-python3 apt-transport-https curl git intel-mkl-full -y -q
 
     #INSTALL PYTHON PACKAGES
     pip3 install  pandas \
-       numpy \
        "dask[complete]" \
        "dask[array]"    \
        "dask[dataframe]"  \
        "dask[diagnostics]"  \
        "dask[distributed]"  \
-       dask-ml \
        scikit-learn \
-       numba \
        joblib \
-       pyarrow \
        tensorflow==2.5.0 \
        tensorflow_addons \
        keras
 
+
+    # INSTALL NUMPY WITH MKL
+    pip3 install numpy==1.19.2 scipy --no-binary numpy,scipy --force-reinstall
+
     #LAST PASSAGES
     apt-get update && apt-get install -y procps && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-%runscript
-
-
-%startscript
 
 %test
     grep -q NAME=\"Ubuntu\" /etc/os-release
@@ -56,6 +54,13 @@ Stage: build
         echo "Container base is Ubuntu as expected."
     else
         echo "Container base is not Ubuntu."
+        exit 1
+    fi
+
+    if [[ $(python3 -c 'import numpy as np; np.__config__.show()' | grep -E -o -m 1 mkl_rt) == "mkl_rt" ]]; then
+        echo "Intel MKL and Numpy installed!!"
+    else
+        echo "CSomething wrong during Intel MKL installation."
         exit 1
     fi
 

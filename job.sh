@@ -5,9 +5,9 @@
 #SBATCH --mail-user stefano.campese@phd.unipd.it
 #SBATCH --mail-type END,FAIL
 #SBATCH --partition allgroups
-#SBATCH --ntasks 2
-#SBATCH --mem 2G
-#SBATCH --time 02:25:00
+#SBATCH --ntasks 1
+#SBATCH --mem 512G
+#SBATCH --time 24:00:00
 #SBATCH –-gres=gpu:1
 cd $SLURM_SUBMIT_DIR
-srun singularity exec container.sif python /opt/workspace/script.py
+srun singularity exec --nv container.sif python /opt/workspace/script.py
