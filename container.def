@@ -41,7 +41,6 @@ Stage: build
        tensorflow_addons \
        keras
 
-
     # INSTALL NUMPY WITH MKL
     pip3 install numpy==1.19.2 scipy --no-binary numpy,scipy --force-reinstall
 
