@@ -56,7 +56,7 @@ Stage: build
         exit 1
     fi
 
-    if [[ $(python3 -c 'import numpy as np; np.__config__.show()' | grep -E -o -m 1 mkl_rt) == "mkl_rt" ]]; then
+    if [ $(python3 -c 'import numpy as np; np.__config__.show()' | grep -E -o -m 1 mkl_rt) == "mkl_rt" ]; then
         echo "Intel MKL and Numpy installed!!"
     else
         echo "CSomething wrong during Intel MKL installation."
