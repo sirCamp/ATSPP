@@ -6,7 +6,8 @@
 #SBATCH --mail-type END,FAIL
 #SBATCH --partition allgroups
 #SBATCH --ntasks 1
-#SBATCH --mem 512G
+#SBATCH --cpu-per-task 32
+#SBATCH --mem 128G
 #SBATCH --time 24:00:00
 #SBATCH –-gres=gpu:1
 cd $SLURM_SUBMIT_DIR
